@@ -2,36 +2,14 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Debug Lab_10_1_A",
+            "name": "Run / Debug Active File (g++)",
             "type": "lldb",
             "request": "launch",
-            "program": "${workspaceFolder}/Lab_10_1_A",
-            "cwd": "${workspaceFolder}",
-            "preLaunchTask": "Build All"
-        },
-        {
-            "name": "Debug Lab_10_1_B",
-            "type": "lldb",
-            "request": "launch",
-            "program": "${workspaceFolder}/Lab_10_1_B",
-            "cwd": "${workspaceFolder}",
-            "preLaunchTask": "Build All"
-        },
-        {
-            "name": "Debug Lab_10_2_A",
-            "type": "lldb",
-            "request": "launch",
-            "program": "${workspaceFolder}/Lab_10_2_A",
-            "cwd": "${workspaceFolder}",
-            "preLaunchTask": "Build All"
-        },
-        {
-            "name": "Debug Lab_10_2_B",
-            "type": "lldb",
-            "request": "launch",
-            "program": "${workspaceFolder}/Lab_10_2_B",
-            "cwd": "${workspaceFolder}",
-            "preLaunchTask": "Build All"
+            "program": "${fileDirname}/${fileBasenameNoExtension}",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${fileDirname}",
+            "preLaunchTask": "C/C++: g++ build active project"
         }
     ]
 }

@@ -37,7 +37,7 @@ namespace UnitTest102A
 }
 #else
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-#include "../tests/doctest.h"
+#include "doctest.h"
 #include "sort_search.h"
 
 TEST_CASE("Тестування 10.2 (Рівень А)") {

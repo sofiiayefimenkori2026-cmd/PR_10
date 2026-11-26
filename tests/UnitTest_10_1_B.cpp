@@ -51,7 +51,7 @@ namespace UnitTest101B
 }
 #else
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-#include "../tests/doctest.h"
+#include "doctest.h"
 #include "calc.h"
 
 TEST_CASE("Тестування 10.1 (Рівень В)") {
