@@ -1,0 +1,41 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug Lab_10_1",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${workspaceFolder}/Lab_10_1",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "preLaunchTask": "Build Lab_10_1"
+        },
+        {
+            "name": "Debug Lab_10_2",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${workspaceFolder}/Lab_10_2",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "preLaunchTask": "Build Lab_10_2"
+        },
+        {
+            "name": "Debug Lab_10_3",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${workspaceFolder}/Lab_10_3",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "preLaunchTask": "Build Lab_10_3"
+        }
+    ]
+}

@@ -1,0 +1,35 @@
+# Binaries & build artifacts
+*.o
+*.obj
+*.exe
+*.out
+*.app
+*.dSYM/
+build/
+bin/
+
+# Compiled executables
+Lab_10_1
+Lab_10_2
+Lab_10_3
+tests/UnitTest_10_1
+tests/UnitTest_10_2
+tests/UnitTest_10_3
+PR_10.1/UnitTest_10_1
+PR_10.2/UnitTest_10_2
+PR_10.3/UnitTest_10_3
+
+# OS & Office files
+.DS_Store
+Thumbs.db
+*.swp
+*~
+~*
+~$*
+*.tmp
+
+# VS Code / IDE caches
+.vscode/.browse.c_cpp.db*
+.idea/
+*.suo
+*.user
