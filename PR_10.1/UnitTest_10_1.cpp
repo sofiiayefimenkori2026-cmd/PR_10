@@ -38,13 +38,15 @@ namespace UnitTest101
             students[2].matematika = 3;
             students[2].pedagogika = 5;
 
-            Assert::AreEqual(4.0, AvgPhysics(students, N), 0.001);
-            Assert::AreEqual(4.0, AvgMath(students, N), 0.001);
+            double avg[5];
+            int cnt[5];
+            CalcAverages(students, N, avg, cnt);
 
-            int cProg = 0;
-            Assert::AreEqual(5.0, AvgProg(students, N, cProg), 0.001);
-            Assert::AreEqual(1, cProg);
-
+            Assert::AreEqual(4.0, avg[0], 0.001);
+            Assert::AreEqual(4.0, avg[1], 0.001);
+            Assert::AreEqual(5.0, avg[2], 0.001);
+            Assert::AreEqual(4.0, avg[3], 0.001);
+            Assert::AreEqual(5.0, avg[4], 0.001);
             Assert::AreEqual(2, CountPhysics5or4(students, N));
         }
     };
@@ -81,8 +83,15 @@ TEST_CASE("Тестування 10.1") {
     students[2].matematika = 3;
     students[2].pedagogika = 5;
 
-    CHECK(AvgPhysics(students, N) == doctest::Approx(4.0));
-    CHECK(AvgMath(students, N) == doctest::Approx(4.0));
+    double avg[5];
+    int cnt[5];
+    CalcAverages(students, N, avg, cnt);
+
+    CHECK(avg[0] == doctest::Approx(4.0));
+    CHECK(avg[1] == doctest::Approx(4.0));
+    CHECK(avg[2] == doctest::Approx(5.0));
+    CHECK(avg[3] == doctest::Approx(4.0));
+    CHECK(avg[4] == doctest::Approx(5.0));
     CHECK(CountPhysics5or4(students, N) == 2);
 }
 #endif

@@ -5,7 +5,7 @@
 #include "../PR_10.1/Lab_10_1.cpp"
 #undef main
 
-TEST_CASE("Тестування розрахунку середнього балу для предметів (10.1)") {
+TEST_CASE("Тестування розрахунку середнього балу за один прохід (CalcAverages)") {
     const int N = 3;
     Student students[N];
 
@@ -33,18 +33,18 @@ TEST_CASE("Тестування розрахунку середнього бал
     students[2].matematika = 3;
     students[2].pedagogika = 5;
 
-    CHECK(AvgPhysics(students, N) == doctest::Approx(4.0));
-    CHECK(AvgMath(students, N) == doctest::Approx(4.0));
+    double avg[5];
+    int cnt[5];
+    CalcAverages(students, N, avg, cnt);
 
-    int cProg = 0, cNum = 0, cPed = 0;
-    CHECK(AvgProg(students, N, cProg) == doctest::Approx(5.0));
-    CHECK(cProg == 1);
-
-    CHECK(AvgNumMethods(students, N, cNum) == doctest::Approx(4.0));
-    CHECK(cNum == 1);
-
-    CHECK(AvgPedagogy(students, N, cPed) == doctest::Approx(5.0));
-    CHECK(cPed == 1);
+    CHECK(avg[0] == doctest::Approx(4.0)); // Фізика
+    CHECK(avg[1] == doctest::Approx(4.0)); // Математика
+    CHECK(avg[2] == doctest::Approx(5.0)); // Програмування
+    CHECK(cnt[2] == 1);
+    CHECK(avg[3] == doctest::Approx(4.0)); // Чисельні методи
+    CHECK(cnt[3] == 1);
+    CHECK(avg[4] == doctest::Approx(5.0)); // Педагогіка
+    CHECK(cnt[4] == 1);
 }
 
 TEST_CASE("Тестування підрахунку студентів з оцінками 5 або 4 з фізики (10.1)") {

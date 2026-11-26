@@ -8,6 +8,7 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
+#include <utility>
 #if defined(_WIN32)
 #include <Windows.h>
 #endif
@@ -25,7 +26,16 @@ const string specStr[] = {
     "Трудове навчання"
 };
 
-// Структура студента
+const string profSubjectName[] = {
+    "програмування",
+    "чисельних методів",
+    "педагогіки",
+    "педагогіки",
+    "педагогіки"
+};
+
+// Структура студента з анонімним об'єднанням для третьої оцінки.
+// Усі поля union (int) займають одну й ту саму область пам'яті.
 struct Student {
     string prizv;
     int kurs;
@@ -41,8 +51,9 @@ struct Student {
 
 // Прототипи функцій
 void Create(Student* p, const int N);
+void PrintHeader();
+void PrintRow(const Student& s, int rowNum);
 void Print(const Student* p, const int N);
-int GetThirdMark(const Student& s);
 bool ShouldPrecede(const Student& a, const Student& b);
 void Sort(Student* p, const int N);
 int* IndexSort(const Student* p, const int N);
@@ -50,33 +61,16 @@ void PrintIndexSorted(const Student* p, const int* I, const int N);
 int CompareStudents(const Student& s, int kurs, int thirdMark, const string& prizv);
 int BinSearch(const Student* p, const int N, const string& prizv, const int kurs, const int thirdMark);
 
-// Отримання оцінки з 3-го (профільного) предмету
-int GetThirdMark(const Student& s) {
-    switch (s.spec) {
-    case KN:
-        return s.programuvannya;
-    case IN:
-        return s.chyselni_metody;
-    case ME:
-    case FI:
-    case TN:
-    default:
-        return s.pedagogika;
-    }
-}
-
 // Умова впорядкування для Варіанту 8:
 // 1-й ключ: курс за зростанням
-// 2-й ключ: оцінка з 3-го предмету за зростанням
+// 2-й ключ: оцінка з 3-го предмету за зростанням (береться напряму з union)
 // 3-й ключ: прізвище за спаданням (у зворотному до алфавітного порядку)
 bool ShouldPrecede(const Student& a, const Student& b) {
     if (a.kurs != b.kurs)
         return a.kurs < b.kurs;
-    int ma = GetThirdMark(a);
-    int mb = GetThirdMark(b);
-    if (ma != mb)
-        return ma < mb;
-    return a.prizv > b.prizv; // за спаданням прізвища
+    if (a.programuvannya != b.programuvannya) // спільна область пам'яті union
+        return a.programuvannya < b.programuvannya;
+    return a.prizv > b.prizv;
 }
 
 // Введення даних
@@ -84,11 +78,9 @@ void Create(Student* p, const int N) {
     int ispec;
     for (int i = 0; i < N; i++) {
         cout << "\nСтудент № " << i + 1 << ":" << endl;
-        cin.get();
-        cin.sync();
 
         cout << "  Прізвище: ";
-        getline(cin, p[i].prizv);
+        getline(cin >> ws, p[i].prizv);
 
         cout << "  Курс: ";
         cin >> p[i].kurs;
@@ -104,28 +96,14 @@ void Create(Student* p, const int N) {
         cout << "  Оцінка з математики: ";
         cin >> p[i].matematika;
 
-        switch (p[i].spec) {
-        case KN:
-            cout << "  Оцінка з програмування: ";
-            cin >> p[i].programuvannya;
-            break;
-        case IN:
-            cout << "  Оцінка з чисельних методів: ";
-            cin >> p[i].chyselni_metody;
-            break;
-        case ME:
-        case FI:
-        case TN:
-        default:
-            cout << "  Оцінка з педагогіки: ";
-            cin >> p[i].pedagogika;
-            break;
-        }
+        // Усі поля union (int) ділять спільну область пам'яті
+        cout << "  Оцінка з " << profSubjectName[p[i].spec] << ": ";
+        cin >> p[i].programuvannya;
     }
 }
 
-// Табличний вивід
-void Print(const Student* p, const int N) {
+// Шапка таблиці
+void PrintHeader() {
     cout << "\n========================================================================================================\n";
     cout << "| " << setw(3)  << right << "№"
          << " | " << setw(14) << left  << "Прізвище"
@@ -134,57 +112,46 @@ void Print(const Student* p, const int N) {
          << " | " << setw(6)  << right << "Фізика"
          << " | " << setw(6)  << right << "Матем."
          << " | " << setw(6)  << right << "Прогр."
-         << " | " << setw(6)  << right << "Чис.мет."
+         << " | " << setw(8)  << right << "Чис.мет."
          << " | " << setw(6)  << right << "Педаг."
          << " |\n";
     cout << "--------------------------------------------------------------------------------------------------------\n";
+}
 
-    for (int i = 0; i < N; i++) {
-        cout << "| " << setw(3)  << right << i + 1
-             << " | " << setw(14) << left  << p[i].prizv
-             << " | " << setw(4)  << right << p[i].kurs
-             << " | " << setw(18) << left  << specStr[p[i].spec]
-             << " | " << setw(6)  << right << p[i].fizyka
-             << " | " << setw(6)  << right << p[i].matematika;
+// Вивід одного рядка таблиці (без дублювання коду в Print та PrintIndexSorted)
+void PrintRow(const Student& s, int rowNum) {
+    int thirdMark = s.programuvannya; // зчитуємо один раз із спільної пам'яті union
+    cout << "| " << setw(3)  << right << rowNum
+         << " | " << setw(14) << left  << s.prizv
+         << " | " << setw(4)  << right << s.kurs
+         << " | " << setw(18) << left  << specStr[s.spec]
+         << " | " << setw(6)  << right << s.fizyka
+         << " | " << setw(6)  << right << s.matematika
+         << " | " << setw(6)  << right << (s.spec == KN ? to_string(thirdMark) : "-")
+         << " | " << setw(8)  << right << (s.spec == IN ? to_string(thirdMark) : "-")
+         << " | " << setw(6)  << right << (s.spec > IN  ? to_string(thirdMark) : "-")
+         << " |\n";
+}
 
-        switch (p[i].spec) {
-        case KN:
-            cout << " | " << setw(6)  << right << p[i].programuvannya
-                 << " | " << setw(8)  << right << "-"
-                 << " | " << setw(6)  << right << "-"
-                 << " |\n";
-            break;
-        case IN:
-            cout << " | " << setw(6)  << right << "-"
-                 << " | " << setw(8)  << right << p[i].chyselni_metody
-                 << " | " << setw(6)  << right << "-"
-                 << " |\n";
-            break;
-        case ME:
-        case FI:
-        case TN:
-        default:
-            cout << " | " << setw(6)  << right << "-"
-                 << " | " << setw(8)  << right << "-"
-                 << " | " << setw(6)  << right << p[i].pedagogika
-                 << " |\n";
-            break;
-        }
-    }
+// Табличний вивід основного масиву
+void Print(const Student* p, const int N) {
+    PrintHeader();
+    for (int i = 0; i < N; i++)
+        PrintRow(p[i], i + 1);
     cout << "========================================================================================================\n";
 }
 
-// Фізичне впорядкування масиву структур (бульбашкове сортування)
+// Фізичне впорядкування масиву структур (бульбашкове сортування з оптимізацією та std::swap)
 void Sort(Student* p, const int N) {
-    Student tmp;
     for (int i0 = 0; i0 < N - 1; i0++) {
+        bool swapped = false;
         for (int i1 = 0; i1 < N - i0 - 1; i1++) {
             if (ShouldPrecede(p[i1 + 1], p[i1])) {
-                tmp = p[i1];
-                p[i1] = p[i1 + 1];
-                p[i1 + 1] = tmp;
+                swap(p[i1], p[i1 + 1]); // переміщення без зайвого копіювання string
+                swapped = true;
             }
         }
+        if (!swapped) break;
     }
 }
 
@@ -206,54 +173,11 @@ int* IndexSort(const Student* p, const int N) {
     return I;
 }
 
-// Вивід масиву за індексами
+// Вивід масиву за індексним масивом
 void PrintIndexSorted(const Student* p, const int* I, const int N) {
-    cout << "\n========================================================================================================\n";
-    cout << "| " << setw(3)  << right << "№"
-         << " | " << setw(14) << left  << "Прізвище"
-         << " | " << setw(4)  << right << "Курс"
-         << " | " << setw(18) << left  << "Спеціальність"
-         << " | " << setw(6)  << right << "Фізика"
-         << " | " << setw(6)  << right << "Матем."
-         << " | " << setw(6)  << right << "Прогр."
-         << " | " << setw(6)  << right << "Чис.мет."
-         << " | " << setw(6)  << right << "Педаг."
-         << " |\n";
-    cout << "--------------------------------------------------------------------------------------------------------\n";
-
-    for (int i = 0; i < N; i++) {
-        int idx = I[i];
-        cout << "| " << setw(3)  << right << i + 1
-             << " | " << setw(14) << left  << p[idx].prizv
-             << " | " << setw(4)  << right << p[idx].kurs
-             << " | " << setw(18) << left  << specStr[p[idx].spec]
-             << " | " << setw(6)  << right << p[idx].fizyka
-             << " | " << setw(6)  << right << p[idx].matematika;
-
-        switch (p[idx].spec) {
-        case KN:
-            cout << " | " << setw(6)  << right << p[idx].programuvannya
-                 << " | " << setw(8)  << right << "-"
-                 << " | " << setw(6)  << right << "-"
-                 << " |\n";
-            break;
-        case IN:
-            cout << " | " << setw(6)  << right << "-"
-                 << " | " << setw(8)  << right << p[idx].chyselni_metody
-                 << " | " << setw(6)  << right << "-"
-                 << " |\n";
-            break;
-        case ME:
-        case FI:
-        case TN:
-        default:
-            cout << " | " << setw(6)  << right << "-"
-                 << " | " << setw(8)  << right << "-"
-                 << " | " << setw(6)  << right << p[idx].pedagogika
-                 << " |\n";
-            break;
-        }
-    }
+    PrintHeader();
+    for (int i = 0; i < N; i++)
+        PrintRow(p[I[i]], i + 1);
     cout << "========================================================================================================\n";
 }
 
@@ -262,19 +186,18 @@ void PrintIndexSorted(const Student* p, const int* I, const int N) {
 int CompareStudents(const Student& s, int kurs, int thirdMark, const string& prizv) {
     if (s.kurs != kurs)
         return (s.kurs < kurs) ? -1 : 1;
-    int tm = GetThirdMark(s);
-    if (tm != thirdMark)
-        return (tm < thirdMark) ? -1 : 1;
-    if (s.prizv > prizv) return -1; // більше прізвище стоїть раніше при спаданні
+    if (s.programuvannya != thirdMark) // спільна область пам'яті union
+        return (s.programuvannya < thirdMark) ? -1 : 1;
+    if (s.prizv > prizv) return -1;    // більше прізвище стоїть раніше при спаданні
     if (s.prizv < prizv) return 1;
     return 0;
 }
 
 // Бінарний пошук у фізично впорядкованому масиві
 int BinSearch(const Student* p, const int N, const string& prizv, const int kurs, const int thirdMark) {
-    int L = 0, R = N - 1, m;
+    int L = 0, R = N - 1;
     while (L <= R) {
-        m = (L + R) / 2;
+        int m = L + (R - L) / 2;
         int cmp = CompareStudents(p[m], kurs, thirdMark, prizv);
         if (cmp == 0)
             return m;
@@ -333,10 +256,8 @@ int main() {
             string searchPrizv;
             int searchKurs, searchMark;
             cout << "\n--- Бінарний пошук студента ---" << endl;
-            cin.get();
-            cin.sync();
             cout << "Введіть прізвище: ";
-            getline(cin, searchPrizv);
+            getline(cin >> ws, searchPrizv);
             cout << "Введіть курс: ";
             cin >> searchKurs;
             cout << "Введіть оцінку з 3-го (профільного) предмету: ";
@@ -345,17 +266,17 @@ int main() {
             int foundIdx = BinSearch(p, N, searchPrizv, searchKurs, searchMark);
             if (foundIdx != -1) {
                 cout << "\nСтудента ЗНАЙДЕНО під номером " << foundIdx + 1 << " у впорядкованому масиві:" << endl;
-                cout << "  Прізвище:      " << p[foundIdx].prizv << endl;
-                cout << "  Курс:          " << p[foundIdx].kurs << endl;
-                cout << "  Спеціальність: " << specStr[p[foundIdx].spec] << endl;
-                cout << "  Оцінка 3 предм: " << GetThirdMark(p[foundIdx]) << endl;
+                cout << "  Прізвище:       " << p[foundIdx].prizv << endl;
+                cout << "  Курс:           " << p[foundIdx].kurs << endl;
+                cout << "  Спеціальність:  " << specStr[p[foundIdx].spec] << endl;
+                cout << "  Оцінка 3 предм: " << p[foundIdx].programuvannya << endl;
             } else {
                 cout << "\nСтудента із зазначеними даними НЕ знайдено (переконайтеся, що масив попередньо впорядковано [3])!" << endl;
             }
             break;
         }
         case 5:
-            if (I != nullptr) delete[] I;
+            delete[] I;
             I = IndexSort(p, N);
             cout << "\nРезультат індексного впорядкування:" << endl;
             PrintIndexSorted(p, I, N);
@@ -369,7 +290,7 @@ int main() {
         }
     } while (menuItem != 0);
 
-    if (I != nullptr) delete[] I;
+    delete[] I;
     delete[] p;
     return 0;
 }

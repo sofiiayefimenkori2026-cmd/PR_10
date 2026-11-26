@@ -25,7 +25,24 @@ const string specStr[] = {
     "Трудове навчання"
 };
 
-// Структура студента з об'єднанням для третьої оцінки
+const string profSubjectName[] = {
+    "програмування",
+    "чисельних методів",
+    "педагогіки",
+    "педагогіки",
+    "педагогіки"
+};
+
+const string subjectTitles[5] = {
+    "Фізика            ",
+    "Математика        ",
+    "Програмування (KN)",
+    "Чис. методи (IN)  ",
+    "Педагогіка        "
+};
+
+// Структура студента з анонімним об'єднанням для третьої оцінки.
+// Усі поля union мають тип int і займають одну й ту саму область пам'яті.
 struct Student {
     string prizv;
     int kurs;
@@ -42,23 +59,17 @@ struct Student {
 // Прототипи функцій
 void Create(Student* p, const int N);
 void Print(const Student* p, const int N);
-double AvgPhysics(const Student* p, const int N);
-double AvgMath(const Student* p, const int N);
-double AvgProg(const Student* p, const int N, int& count);
-double AvgNumMethods(const Student* p, const int N, int& count);
-double AvgPedagogy(const Student* p, const int N, int& count);
+void CalcAverages(const Student* p, const int N, double avg[5], int cnt[5]);
 int CountPhysics5or4(const Student* p, const int N);
 
-// Реалізація введення даних
+// Введення даних про студентів
 void Create(Student* p, const int N) {
     int ispec;
     for (int i = 0; i < N; i++) {
         cout << "\nСтудент № " << i + 1 << ":" << endl;
-        cin.get(); // очищення буфера
-        cin.sync();
 
         cout << "  Прізвище: ";
-        getline(cin, p[i].prizv);
+        getline(cin >> ws, p[i].prizv);
 
         cout << "  Курс: ";
         cin >> p[i].kurs;
@@ -74,23 +85,9 @@ void Create(Student* p, const int N) {
         cout << "  Оцінка з математики: ";
         cin >> p[i].matematika;
 
-        switch (p[i].spec) {
-        case KN:
-            cout << "  Оцінка з програмування: ";
-            cin >> p[i].programuvannya;
-            break;
-        case IN:
-            cout << "  Оцінка з чисельних методів: ";
-            cin >> p[i].chyselni_metody;
-            break;
-        case ME:
-        case FI:
-        case TN:
-        default:
-            cout << "  Оцінка з педагогіки: ";
-            cin >> p[i].pedagogika;
-            break;
-        }
+        // Усі поля union (int) ділять спільну область пам'яті, тому записуємо напряму
+        cout << "  Оцінка з " << profSubjectName[p[i].spec] << ": ";
+        cin >> p[i].programuvannya;
     }
 }
 
@@ -104,103 +101,55 @@ void Print(const Student* p, const int N) {
          << " | " << setw(6)  << right << "Фізика"
          << " | " << setw(6)  << right << "Матем."
          << " | " << setw(6)  << right << "Прогр."
-         << " | " << setw(6)  << right << "Чис.мет."
+         << " | " << setw(8)  << right << "Чис.мет."
          << " | " << setw(6)  << right << "Педаг."
          << " |\n";
     cout << "--------------------------------------------------------------------------------------------------------\n";
 
     for (int i = 0; i < N; i++) {
+        // Зчитуємо третю оцінку один раз із спільної області пам'яті union
+        int thirdMark = p[i].programuvannya;
         cout << "| " << setw(3)  << right << i + 1
              << " | " << setw(14) << left  << p[i].prizv
              << " | " << setw(4)  << right << p[i].kurs
              << " | " << setw(18) << left  << specStr[p[i].spec]
              << " | " << setw(6)  << right << p[i].fizyka
-             << " | " << setw(6)  << right << p[i].matematika;
-
-        switch (p[i].spec) {
-        case KN:
-            cout << " | " << setw(6)  << right << p[i].programuvannya
-                 << " | " << setw(8)  << right << "-"
-                 << " | " << setw(6)  << right << "-"
-                 << " |\n";
-            break;
-        case IN:
-            cout << " | " << setw(6)  << right << "-"
-                 << " | " << setw(8)  << right << p[i].chyselni_metody
-                 << " | " << setw(6)  << right << "-"
-                 << " |\n";
-            break;
-        case ME:
-        case FI:
-        case TN:
-        default:
-            cout << " | " << setw(6)  << right << "-"
-                 << " | " << setw(8)  << right << "-"
-                 << " | " << setw(6)  << right << p[i].pedagogika
-                 << " |\n";
-            break;
-        }
+             << " | " << setw(6)  << right << p[i].matematika
+             << " | " << setw(6)  << right << (p[i].spec == KN ? to_string(thirdMark) : "-")
+             << " | " << setw(8)  << right << (p[i].spec == IN ? to_string(thirdMark) : "-")
+             << " | " << setw(6)  << right << (p[i].spec > IN  ? to_string(thirdMark) : "-")
+             << " |\n";
     }
     cout << "========================================================================================================\n";
 }
 
-// Середній бал з фізики
-double AvgPhysics(const Student* p, const int N) {
-    if (N <= 0) return 0.0;
-    double s = 0.0;
-    for (int i = 0; i < N; i++) {
-        s += p[i].fizyka;
+// Обчислення середнього балу для кожного з 5 предметів за один прохід по масиву:
+// індекси: 0 - Фізика, 1 - Математика, 2 - Програмування, 3 - Чис. методи, 4 - Педагогіка
+void CalcAverages(const Student* p, const int N, double avg[5], int cnt[5]) {
+    double sum[5] = { 0.0, 0.0, 0.0, 0.0, 0.0 };
+    for (int j = 0; j < 5; j++) {
+        avg[j] = 0.0;
+        cnt[j] = 0;
     }
-    return s / N;
-}
 
-// Середній бал з математики
-double AvgMath(const Student* p, const int N) {
-    if (N <= 0) return 0.0;
-    double s = 0.0;
     for (int i = 0; i < N; i++) {
-        s += p[i].matematika;
-    }
-    return s / N;
-}
+        sum[0] += p[i].fizyka;
+        cnt[0]++;
 
-// Середній бал з програмування (тільки спеціальність KN)
-double AvgProg(const Student* p, const int N, int& count) {
-    count = 0;
-    double s = 0.0;
-    for (int i = 0; i < N; i++) {
-        if (p[i].spec == KN) {
-            s += p[i].programuvannya;
-            count++;
-        }
-    }
-    return (count > 0) ? (s / count) : 0.0;
-}
+        sum[1] += p[i].matematika;
+        cnt[1]++;
 
-// Середній бал з чисельних методів (тільки спеціальність IN)
-double AvgNumMethods(const Student* p, const int N, int& count) {
-    count = 0;
-    double s = 0.0;
-    for (int i = 0; i < N; i++) {
-        if (p[i].spec == IN) {
-            s += p[i].chyselni_metody;
-            count++;
-        }
+        // Індекс профільного предмету залежить від спеціальності,
+        // а значення оцінки береться напряму зі спільної пам'яті union
+        int profIdx = (p[i].spec == KN) ? 2 : (p[i].spec == IN ? 3 : 4);
+        sum[profIdx] += p[i].programuvannya;
+        cnt[profIdx]++;
     }
-    return (count > 0) ? (s / count) : 0.0;
-}
 
-// Середній бал з педагогіки (інші спеціальності: ME, FI, TN)
-double AvgPedagogy(const Student* p, const int N, int& count) {
-    count = 0;
-    double s = 0.0;
-    for (int i = 0; i < N; i++) {
-        if (p[i].spec == ME || p[i].spec == FI || p[i].spec == TN) {
-            s += p[i].pedagogika;
-            count++;
-        }
+    for (int j = 0; j < 5; j++) {
+        if (cnt[j] > 0)
+            avg[j] = sum[j] / cnt[j];
     }
-    return (count > 0) ? (s / count) : 0.0;
 }
 
 // Кількість студентів, які отримали з фізики оцінки "5" або "4"
@@ -234,30 +183,19 @@ int main() {
     Create(p, N);
     Print(p, N);
 
+    double avg[5];
+    int cnt[5];
+    CalcAverages(p, N, avg, cnt);
+
     cout << fixed << setprecision(2);
     cout << "\nСередній бал для кожного предмету:" << endl;
-    cout << "  1. Фізика:             " << AvgPhysics(p, N) << endl;
-    cout << "  2. Математика:         " << AvgMath(p, N) << endl;
-
-    int cProg = 0, cNum = 0, cPed = 0;
-    double avgP = AvgProg(p, N, cProg);
-    double avgN = AvgNumMethods(p, N, cNum);
-    double avgPed = AvgPedagogy(p, N, cPed);
-
-    if (cProg > 0)
-        cout << "  3. Програмування (KN): " << avgP << " (студентів: " << cProg << ")" << endl;
-    else
-        cout << "  3. Програмування (KN): немає студентів цієї спеціальності" << endl;
-
-    if (cNum > 0)
-        cout << "  4. Чис. методи (IN):   " << avgN << " (студентів: " << cNum << ")" << endl;
-    else
-        cout << "  4. Чис. методи (IN):   немає студентів цієї спеціальності" << endl;
-
-    if (cPed > 0)
-        cout << "  5. Педагогіка:         " << avgPed << " (студентів: " << cPed << ")" << endl;
-    else
-        cout << "  5. Педагогіка:         немає студентів цих спеціальностей" << endl;
+    for (int j = 0; j < 5; j++) {
+        cout << "  " << j + 1 << ". " << subjectTitles[j] << ": ";
+        if (cnt[j] > 0)
+            cout << avg[j] << " (студентів: " << cnt[j] << ")" << endl;
+        else
+            cout << "немає студентів" << endl;
+    }
 
     int countPhys = CountPhysics5or4(p, N);
     cout << "\nКількість студентів, які отримали з фізики оцінки '5' або '4': " << countPhys << endl;
