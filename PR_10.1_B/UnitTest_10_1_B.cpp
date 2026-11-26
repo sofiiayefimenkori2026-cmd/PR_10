@@ -2,7 +2,7 @@
 #include "pch.h"
 #include "CppUnitTest.h"
 #define main prog_main
-#include "Lab_10_1.cpp"
+#include "Lab_10_1_B.cpp"
 #undef main
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
@@ -55,7 +55,7 @@ namespace UnitTest101
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "../tests/doctest.h"
 #define main prog_main
-#include "Lab_10_1.cpp"
+#include "Lab_10_1_B.cpp"
 #undef main
 
 TEST_CASE("Тестування 10.1") {

@@ -2,28 +2,36 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Debug Lab_10_1",
+            "name": "Debug Lab_10_1_A",
             "type": "lldb",
             "request": "launch",
-            "program": "${workspaceFolder}/Lab_10_1",
-            "args": [],
-            "stopAtEntry": false,
+            "program": "${workspaceFolder}/Lab_10_1_A",
             "cwd": "${workspaceFolder}",
-            "environment": [],
-            "externalConsole": false,
-            "preLaunchTask": "Build Lab_10_1"
+            "preLaunchTask": "Build All"
         },
         {
-            "name": "Debug Lab_10_2",
+            "name": "Debug Lab_10_1_B",
             "type": "lldb",
             "request": "launch",
-            "program": "${workspaceFolder}/Lab_10_2",
-            "args": [],
-            "stopAtEntry": false,
+            "program": "${workspaceFolder}/Lab_10_1_B",
             "cwd": "${workspaceFolder}",
-            "environment": [],
-            "externalConsole": false,
-            "preLaunchTask": "Build Lab_10_2"
+            "preLaunchTask": "Build All"
+        },
+        {
+            "name": "Debug Lab_10_2_A",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${workspaceFolder}/Lab_10_2_A",
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "Build All"
+        },
+        {
+            "name": "Debug Lab_10_2_B",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${workspaceFolder}/Lab_10_2_B",
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "Build All"
         }
     ]
 }

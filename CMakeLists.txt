@@ -4,17 +4,23 @@ project(Lab_10 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-include_directories(PR_10.1 PR_10.2 tests)
+include_directories(tests)
 
-# Executables
-add_executable(Lab_10_1 PR_10.1/Lab_10_1.cpp)
-add_executable(Lab_10_2 PR_10.2/Lab_10_2.cpp)
+add_executable(Lab_10_1_A PR_10.1_A/Lab_10_1_A.cpp)
+add_executable(Lab_10_1_B PR_10.1_B/Lab_10_1_B.cpp)
+add_executable(Lab_10_2_A PR_10.2_A/Lab_10_2_A.cpp)
+add_executable(Lab_10_2_B PR_10.2_B/Lab_10_2_B.cpp)
 
-# Testing
 enable_testing()
 
-add_executable(UnitTest_10_1 tests/UnitTest_10_1.cpp)
-add_test(NAME Test_10_1 COMMAND UnitTest_10_1)
+add_executable(UnitTest_10_1_A PR_10.1_A/UnitTest_10_1_A.cpp)
+add_test(NAME Test_10_1_A COMMAND UnitTest_10_1_A)
 
-add_executable(UnitTest_10_2 tests/UnitTest_10_2.cpp)
-add_test(NAME Test_10_2 COMMAND UnitTest_10_2)
+add_executable(UnitTest_10_1_B PR_10.1_B/UnitTest_10_1_B.cpp)
+add_test(NAME Test_10_1_B COMMAND UnitTest_10_1_B)
+
+add_executable(UnitTest_10_2_A PR_10.2_A/UnitTest_10_2_A.cpp)
+add_test(NAME Test_10_2_A COMMAND UnitTest_10_2_A)
+
+add_executable(UnitTest_10_2_B PR_10.2_B/UnitTest_10_2_B.cpp)
+add_test(NAME Test_10_2_B COMMAND UnitTest_10_2_B)
