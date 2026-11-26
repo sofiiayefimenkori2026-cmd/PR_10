@@ -34,13 +34,6 @@
             "command": "make Lab_10_2",
             "group": "build",
             "problemMatcher": ["$gcc"]
-        },
-        {
-            "type": "shell",
-            "label": "Build Lab_10_3",
-            "command": "make Lab_10_3",
-            "group": "build",
-            "problemMatcher": ["$gcc"]
         }
     ]
 }
