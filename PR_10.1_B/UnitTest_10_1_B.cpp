@@ -1,15 +1,13 @@
 #if defined(_MSC_VER)
 #include "pch.h"
 #include "CppUnitTest.h"
-#define main prog_main
-#include "Lab_10_1_B.cpp"
-#undef main
+#include "calc.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
-namespace UnitTest101
+namespace UnitTest101B
 {
-    TEST_CLASS(UnitTest101)
+    TEST_CLASS(UnitTest101B)
     {
     public:
         TEST_METHOD(TestAveragesAndCount)
@@ -54,11 +52,9 @@ namespace UnitTest101
 #else
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "../tests/doctest.h"
-#define main prog_main
-#include "Lab_10_1_B.cpp"
-#undef main
+#include "calc.h"
 
-TEST_CASE("Тестування 10.1") {
+TEST_CASE("Тестування 10.1 (Рівень В)") {
     const int N = 3;
     Student students[N];
 

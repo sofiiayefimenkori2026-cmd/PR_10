@@ -1,9 +1,7 @@
 #if defined(_MSC_VER)
 #include "pch.h"
 #include "CppUnitTest.h"
-#define main prog_main
-#include "Lab_10_2_A.cpp"
-#undef main
+#include "sort_search.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -40,9 +38,7 @@ namespace UnitTest102A
 #else
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "../tests/doctest.h"
-#define main prog_main
-#include "Lab_10_2_A.cpp"
-#undef main
+#include "sort_search.h"
 
 TEST_CASE("Тестування 10.2 (Рівень А)") {
     const int N = 3;
